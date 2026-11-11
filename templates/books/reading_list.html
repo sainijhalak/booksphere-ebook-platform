@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}My Saved Library – BookSphere{% endblock %}
+
+{% block content %}
+<div class="catalog-container">
+    <div class="reading-list-header">
+        <h1>🔖 My Saved Library</h1>
+        <p>Curated reading collection saved by <strong>{{ user.username }}</strong></p>
+    </div>
+
+    {% if saved_items %}
+    <div class="books-grid">
+        {% for item in saved_items %}
+        <article class="book-card">
+            <div class="card-cover-wrapper">
+                {% if item.book.cover_image_url %}
+                <img src="{{ item.book.cover_image_url }}" alt="{{ item.book.title }}" class="card-cover-img">
+                {% else %}
+                <div class="card-cover-placeholder">📖</div>
+                {% endif %}
+                
+                {% if item.book.category %}
+                <span class="category-tag">{{ item.book.category.name }}</span>
+                {% endif %}
+
+                <button 
+                    class="bookmark-btn saved" 
+                    title="Remove from reading list"
+                    onclick="toggleBookmark(event, {{ item.book.id }})">
+                    ❤️
+                </button>
+            </div>
+
+            <div class="card-body">
+                <div class="card-meta">
+                    <span class="rating-badge">★ {{ item.book.average_rating }}</span>
+                    <span class="year-badge">{{ item.book.publication_year }}</span>
+                </div>
+
+                <h3 class="card-title">
+                    <a href="{% url 'book_detail' pk=item.book.id %}">{{ item.book.title }}</a>
+                </h3>
+                <p class="card-author">by {{ item.book.author }}</p>
+                <p class="card-desc">{{ item.book.description|truncatewords:20 }}</p>
+
+                <div class="card-footer">
+                    <span class="saved-date">Saved on {{ item.added_at|date:"M d, Y" }}</span>
+                    <a href="{% url 'book_detail' pk=item.book.id %}" class="btn-card-action">Read Now →</a>
+                </div>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <span class="empty-icon">📚</span>
+        <h3>Your library is empty</h3>
+        <p>Click the heart icon on any eBook in the catalog to save it to your personal reading list.</p>
+        <a href="{% url 'book_list' %}" class="btn-primary">Explore Catalog</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

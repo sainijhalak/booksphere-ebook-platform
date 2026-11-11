@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+
+{% block title %}Explore Curated eBooks – BookSphere{% endblock %}
+
+{% block content %}
+<div class="hero-banner">
+    <div class="hero-content">
+        <h1 class="hero-title">Expand Your Horizons With Curated eBooks</h1>
+        <p class="hero-subtitle">Access foundational texts in Distributed Systems, Artificial Intelligence, Quantitative Finance, and Classic Literature.</p>
+        
+        <div class="stats-row">
+            <div class="stat-box">
+                <span class="stat-number">{{ total_count }}</span>
+                <span class="stat-label">eBooks Available</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-number">{{ categories.count }}</span>
+                <span class="stat-label">Specialized Categories</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-number">100% Free</span>
+                <span class="stat-label">Instant Digital Access</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="catalog-container">
+    <!-- Category Filter Bar -->
+    <div class="filter-bar">
+        <div class="category-pills">
+            <a href="{% url 'book_list' %}" class="pill {% if not active_category %}active{% endif %}">
+                All Domains
+            </a>
+            {% for cat in categories %}
+            <a href="?category={{ cat.slug }}{% if q %}&q={{ q }}{% endif %}" class="pill {% if active_category.slug == cat.slug %}active{% endif %}">
+                {{ cat.icon }} {{ cat.name }}
+            </a>
+            {% endfor %}
+        </div>
+
+        <div class="sort-selector">
+            <form method="GET" id="sortForm">
+                {% if active_category %}<input type="hidden" name="category" value="{{ active_category.slug }}">{% endif %}
+                {% if q %}<input type="hidden" name="q" value="{{ q }}">{% endif %}
+                <label for="sortSelect">Sort:</label>
+                <select name="sort" id="sortSelect" onchange="this.form.submit()">
+                    <option value="newest" {% if sort == 'newest' %}selected{% endif %}>Recently Added</option>
+                    <option value="title" {% if sort == 'title' %}selected{% endif %}>Title (A-Z)</option>
+                    <option value="year" {% if sort == 'year' %}selected{% endif %}>Publication Year</option>
+                </select>
+            </form>
+        </div>
+    </div>
+
+    <!-- Active query indicator -->
+    {% if q %}
+    <div class="search-feedback">
+        <span>Showing results for "<strong>{{ q }}</strong>" ({{ total_count }} found)</span>
+        <a href="{% url 'book_list' %}" class="clear-search">Clear filter ✕</a>
+    </div>
+    {% endif %}
+
+    <!-- Book Cards Grid -->
+    {% if books %}
+    <div class="books-grid">
+        {% for book in books %}
+        <article class="book-card">
+            <div class="card-cover-wrapper">
+                {% if book.cover_image_url %}
+                <img src="{{ book.cover_image_url }}" alt="{{ book.title }}" class="card-cover-img" loading="lazy">
+                {% else %}
+                <div class="card-cover-placeholder">📖</div>
+                {% endif %}
+                
+                {% if book.category %}
+                <span class="category-tag">{{ book.category.name }}</span>
+                {% endif %}
+
+                <!-- Async Bookmark Button -->
+                {% if user.is_authenticated %}
+                <button 
+                    class="bookmark-btn {% if book.id in user_saved_ids %}saved{% endif %}" 
+                    data-book-id="{{ book.id }}"
+                    title="Toggle save to reading list"
+                    onclick="toggleBookmark(event, {{ book.id }})">
+                    {% if book.id in user_saved_ids %}❤️{% else %}🤍{% endif %}
+                </button>
+                {% endif %}
+            </div>
+
+            <div class="card-body">
+                <div class="card-meta">
+                    <span class="rating-badge">★ {{ book.average_rating }} ({{ book.review_count }})</span>
+                    <span class="year-badge">{{ book.publication_year }}</span>
+                </div>
+
+                <h3 class="card-title">
+                    <a href="{% url 'book_detail' pk=book.id %}">{{ book.title }}</a>
+                </h3>
+                <p class="card-author">by {{ book.author }}</p>
+                <p class="card-desc">{{ book.description|truncatewords:22 }}</p>
+
+                <div class="card-footer">
+                    <span class="pages-info">📄 {{ book.pages }} pages</span>
+                    <a href="{% url 'book_detail' pk=book.id %}" class="btn-card-action">View Book →</a>
+                </div>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <span class="empty-icon">🔍</span>
+        <h3>No books found matching your criteria</h3>
+        <p>Try searching for different keywords or explore all categories.</p>
+        <a href="{% url 'book_list' %}" class="btn-primary">Browse All Books</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

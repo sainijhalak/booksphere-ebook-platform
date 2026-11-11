@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ book.title }} – BookSphere{% endblock %}
+
+{% block content %}
+<div class="detail-container">
+    <div class="breadcrumbs">
+        <a href="{% url 'book_list' %}">← Back to Catalog</a>
+        {% if book.category %}
+            <span>/</span>
+            <a href="{% url 'book_list' %}?category={{ book.category.slug }}">{{ book.category.name }}</a>
+        {% endif %}
+    </div>
+
+    <div class="book-detail-grid">
+        <!-- Left Column: Cover & Actions -->
+        <div class="detail-media">
+            <div class="detail-cover-card">
+                {% if book.cover_image_url %}
+                <img src="{{ book.cover_image_url }}" alt="{{ book.title }}" class="detail-cover-img">
+                {% else %}
+                <div class="detail-placeholder">📖</div>
+                {% endif %}
+            </div>
+
+            <div class="detail-actions">
+                {% if user.is_authenticated %}
+                <button 
+                    id="bookmarkToggleBtn"
+                    class="btn-bookmark-large {% if is_saved %}saved{% endif %}"
+                    onclick="toggleBookmark(event, {{ book.id }})">
+                    <span id="bookmarkIcon">{% if is_saved %}❤️ Saved in Library{% else %}🤍 Save to My Reading List{% endif %}</span>
+                </button>
+                {% else %}
+                <a href="{% url 'login' %}" class="btn-bookmark-large">🤍 Log In to Save Book</a>
+                {% endif %}
+
+                {% if book.preview_content %}
+                <button class="btn-read-sample" onclick="openReaderModal()">
+                    📖 Read Sample Excerpt
+                </button>
+                {% endif %}
+
+                {% if user.is_staff or user.is_superuser %}
+                <a href="{% url 'book_delete' pk=book.id %}" class="btn-delete-book">🗑️ Remove eBook</a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Right Column: Metadata & Synopsis -->
+        <div class="detail-info">
+            {% if book.category %}
+            <span class="detail-category-badge">{{ book.category.icon }} {{ book.category.name }}</span>
+            {% endif %}
+
+            <h1 class="detail-title">{{ book.title }}</h1>
+            <p class="detail-author">By <span class="author-name">{{ book.author }}</span></p>
+
+            <div class="detail-metrics-bar">
+                <div class="metric-item">
+                    <span class="m-value">★ {{ book.average_rating }}</span>
+                    <span class="m-label">{{ book.review_count }} Reviews</span>
+                </div>
+                <div class="metric-item">
+                    <span class="m-value">{{ book.pages }}</span>
+                    <span class="m-label">Pages</span>
+                </div>
+                <div class="metric-item">
+                    <span class="m-value">{{ book.publication_year }}</span>
+                    <span class="m-label">Year Published</span>
+                </div>
+                {% if book.isbn %}
+                <div class="metric-item">
+                    <span class="m-value">{{ book.isbn }}</span>
+                    <span class="m-label">ISBN</span>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="detail-section">
+                <h2>Synopsis & Overview</h2>
+                <div class="detail-description">
+                    {{ book.description|linebreaks }}
+                </div>
+            </div>
+
+            <!-- Reviews Section -->
+            <div class="detail-section reviews-section">
+                <div class="reviews-header">
+                    <h2>Community Reviews & Ratings ({{ book.review_count }})</h2>
+                </div>
+
+                <!-- Add Review Form -->
+                {% if user.is_authenticated %}
+                <div class="review-box">
+                    <h3>Share Your Assessment</h3>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="{{ review_form.rating.id_for_label }}">Rating (1 to 5 Stars):</label>
+                            {{ review_form.rating }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ review_form.comment.id_for_label }}">Review:</label>
+                            {{ review_form.comment }}
+                        </div>
+                        <button type="submit" class="btn-primary">Post Review</button>
+                    </form>
+                </div>
+                {% else %}
+                <div class="review-prompt">
+                    <p><a href="{% url 'login' %}">Sign in</a> to leave a rating and review for this book.</p>
+                </div>
+                {% endif %}
+
+                <!-- Existing Reviews List -->
+                <div class="reviews-list">
+                    {% for rev in reviews %}
+                    <div class="review-card">
+                        <div class="review-meta">
+                            <span class="review-user">👤 {{ rev.user.username }}</span>
+                            <span class="review-stars">
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= rev.rating %}★{% else %}☆{% endif %}
+                                {% endfor %}
+                            </span>
+                            <span class="review-date">{{ rev.created_at|date:"M d, Y" }}</span>
+                        </div>
+                        <p class="review-comment">{{ rev.comment }}</p>
+                    </div>
+                    {% empty %}
+                    <p class="no-reviews">No reviews written yet. Be the first to share your critique!</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sample Excerpt Reader Modal -->
+<div id="readerModal" class="modal-backdrop" onclick="closeReaderModalOnBackdrop(event)">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3>📖 Preview: {{ book.title }}</h3>
+            <button class="modal-close" onclick="closeReaderModal()">✕</button>
+        </div>
+        <div class="modal-body reader-typography">
+            <h4>Chapter 1 Excerpt</h4>
+            <p>{{ book.preview_content|linebreaks }}</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-subtle" onclick="closeReaderModal()">Close Preview</button>
+        </div>
+    </div>
+</div>
+{% endblock %}

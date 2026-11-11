@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete eBook – BookSphere{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="form-card delete-card">
+        <h2>⚠️ Confirm Deletion</h2>
+        <p>Are you sure you want to permanently delete <strong>"{{ book.title }}"</strong> by {{ book.author }}?</p>
+        <p class="delete-warning">This action removes all associated reviews, ratings, and library bookmarks.</p>
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-actions">
+                <a href="{% url 'book_detail' pk=book.id %}" class="btn-subtle">Cancel</a>
+                <button type="submit" class="btn-danger">Permanently Delete</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

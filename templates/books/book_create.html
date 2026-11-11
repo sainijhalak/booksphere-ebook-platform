@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}Add New eBook – BookSphere{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="form-card">
+        <div class="form-header">
+            <h2>Add New eBook to Catalog</h2>
+            <p>Publish a learning resource or foundational text to the BookSphere community library.</p>
+        </div>
+
+        <form method="POST">
+            {% csrf_token %}
+            {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}
+                <small class="field-help">{{ field.help_text }}</small>
+                {% endif %}
+                {% for err in field.errors %}
+                <span class="field-error">{{ err }}</span>
+                {% endfor %}
+            </div>
+            {% endfor %}
+
+            <div class="form-actions">
+                <a href="{% url 'book_list' %}" class="btn-subtle">Cancel</a>
+                <button type="submit" class="btn-primary">Publish eBook</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
