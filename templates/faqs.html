@@ -1,0 +1,102 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OnlyBooks / BookSphere - FAQs</title>
+    <link rel="shortcut icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRLV1Jth7w0RYERXRuyFHeCFclAeGnjsetwxQ&s" type="image/x-icon">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #0f172a;
+            color: #f8fafc;
+        }
+        .header {
+            text-align: center;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: white;
+            padding: 40px 20px;
+            border-bottom: 2px solid #ff6600;
+        }
+        .nav-links {
+            margin-bottom: 15px;
+        }
+        .nav-links a {
+            color: #ff6600;
+            text-decoration: none;
+            margin: 0 10px;
+            font-weight: 600;
+        }
+        .header h1 {
+            font-size: 2.5rem;
+            margin: 0;
+            color: #ff6600;
+        }
+        .header p {
+            font-size: 1.1rem;
+            color: #cbd5e1;
+            margin-top: 8px;
+        }
+        .faq-container {
+            padding: 40px 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .faq-item {
+            background-color: #1e293b;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+            padding: 24px;
+            border: 1px solid #334155;
+            border-left: 5px solid #ff6600;
+        }
+        .faq-item h2 {
+            margin: 0 0 10px;
+            font-size: 1.35rem;
+            color: #f8fafc;
+        }
+        .faq-item p {
+            font-size: 1rem;
+            color: #94a3b8;
+            margin: 0;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="nav-links">
+            <a href="/">← Home</a>
+            <a href="/ebook/">E-Books</a>
+            <a href="/about/">About</a>
+            <a href="/reviews/">Reviews</a>
+            <a href="/events/">Events</a>
+        </div>
+        <h1>Frequently Asked Questions</h1>
+        <p>Find answers to common questions about BookSphere (OnlyBooks).</p>
+    </header>
+
+    <main class="faq-container">
+        <div class="faq-item">
+            <h2>Are all eBooks on BookSphere free to access?</h2>
+            <p>Yes! We believe in accessible digital literature. All curated eBooks in our primary catalog can be read online or downloaded directly.</p>
+        </div>
+        <div class="faq-item">
+            <h2>Can I submit and publish my own eBook?</h2>
+            <p>Absolutely. Authenticated users and authors can click "+ Add Book" in the navigation bar to contribute to the catalog.</p>
+        </div>
+        <div class="faq-item">
+            <h2>How do I save books to my personal reading list?</h2>
+            <p>Click the heart/bookmark icon on any book. Saved items are synced to your account and accessible at any time under "My Library".</p>
+        </div>
+        <div class="faq-item">
+            <h2>Is there a REST API available for headless developers?</h2>
+            <p>Yes. You can access our public JSON endpoints at <code>/api/books/</code> and <code>/api/books/&lt;id&gt;/</code>.</p>
+        </div>
+    </main>
+</body>
+</html>

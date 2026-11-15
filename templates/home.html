@@ -1,0 +1,270 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookSphere – Curated eBook & Reading Store</title>
+    <link rel="shortcut icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRLV1Jth7w0RYERXRuyFHeCFclAeGnjsetwxQ&s" type="image/x-icon">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
+    <style>
+        .auth-nav-link {
+            color: #ff6600 !important;
+            font-weight: 600;
+        }
+        .flash-banner {
+            background: #22c55e;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        .book-link-title {
+            color: #fff;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .book-link-title:hover {
+            color: #ff6600;
+        }
+    </style>
+</head>
+<body>
+    {% if messages %}
+        {% for message in messages %}
+            <div class="flash-banner">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <header class="header">
+        <div class="mainheader">
+            <div class="logo">
+                <a href="/" style="text-decoration: none; display: flex; align-items: center; gap: 8px;">
+                    <img src="{% static 'images/logo.png' %}" alt="BookSphere logo" style="height: 48px; width: auto;">
+                </a>
+            </div>
+            <div class="navbar">
+                <a href="/about/">About us</a>
+                <a href="/reviews/">Reviews</a>
+                <a href="/faqs/">FAQs</a>
+                <a href="/events/">Events</a>
+                <a href="/ebook/">E-Books</a>
+                <a href="/download/" class="btn">Download</a>
+                {% if user.is_authenticated %}
+                    <a href="/reading-list/" class="auth-nav-link">🔖 My Library</a>
+                    <a href="/books/new/" class="auth-nav-link">+ Add Book</a>
+                    <a href="/logout/" style="color: #ef4444;">Logout ({{ user.username }})</a>
+                {% else %}
+                    <a href="/login/" class="auth-nav-link">Sign In</a>
+                    <a href="/register/" class="auth-nav-link">Register</a>
+                {% endif %}
+                <i class='bx bx-x' id="close"></i>
+            </div>
+            <i class='bx bx-menu' id="menuBar"></i>
+        </div>
+
+        <div class="home">
+            <div class="homecontent">
+                <h2>BookSphere <br>Reading Store</h2>
+                <h4>The Complete <br>Stories & Learning</h4>
+                <p>Curated digital bookstore and reading sanctuary. Browse, review, bookmark, and download foundational eBooks across Distributed Systems, AI, Economics, and Timeless Classics.</p>
+                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                    <button class="btn"><a href="/ebook/">Explore E-Books</a></button>
+                    <button class="btn" style="background: transparent; border: 2px solid #fff;"><a href="/download/">Download App</a></button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="sell">
+        <div class="mainselling">
+            <div class="col1">
+                <span>{{ total_books|default:"700" }}+</span>
+                <p>Curated foundational eBooks available across major engineering & literary domains.</p>
+            </div>
+            <div class="col2">
+                <span>1,700+</span>
+                <p>Active readers, students, and software engineers learning daily on BookSphere.</p>
+            </div>
+            <div class="col3">
+                <span>{{ categories.count|default:"600" }}+</span>
+                <p>Specialized subject domains and verified community book reviews.</p>
+            </div>
+            <div class="col4">
+                <span>100%</span>
+                <p>Free, accessible digital reading resources and chapter excerpts.</p>
+            </div>
+        </div>
+    </div>
+
+    <section class="critics">
+        <div class="container">
+            <h3><i class='bx bx-right-arrow-alt'></i> Reviews by Book Critics</h3>
+            <p>"BookSphere elevates digital reading by combining structured academic literature, engineering foundations, and a community-driven rating platform. Clean, zero-bloat, and blazing fast."</p>
+            <a href="https://www.santafenewmexican.com/" target="_blank">Santa Fe Literary Journal</a>
+        </div>
+    </section>
+
+    <section class="crucial">
+        <div class="container">
+            <h3>Crucial Reading Takeaways</h3>
+            <p>Every curated volume in our catalog offers actionable insights designed to transform your mindset, technical skills, and intellectual depth.</p>
+            <div class="topics">
+                <div class="col5">
+                    <i class='bx bx-check'></i>
+                    <div class="paragraph">
+                        <h4>Get A Plan</h4>
+                        <p>Structured reading roadmaps designed for mastery.</p>
+                    </div>
+                </div>
+                <div class="col5">
+                    <i class='bx bx-check'></i>
+                    <div class="paragraph">
+                        <h4>Build Up & Out</h4>
+                        <p>From fundamental theory to production-grade architectures.</p>
+                    </div>
+                </div>
+                <div class="col5">
+                    <i class='bx bx-check'></i>
+                    <div class="paragraph">
+                        <h4>Empower Minds</h4>
+                        <p>Accessible knowledge for every aspiring engineer & reader.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="books" id="books">
+        <div class="maintopics">
+            <h2>Featured E-Books</h2>
+            <p>Explore our most celebrated titles in Distributed Systems, Artificial Intelligence, and Modern Philosophy.</p>
+        </div>
+        <div class="bookcontent">
+            {% for book in books %}
+            <div class="col8">
+                <div class="image">
+                    <a href="{% url 'book_detail' pk=book.id %}">
+                        <img src="{{ book.cover_image_url|default:'/static/images/book1.jpg' }}" alt="{{ book.title }}">
+                    </a>
+                </div>
+                <p>
+                    <a href="{% url 'book_detail' pk=book.id %}" class="book-link-title">{{ book.title }}</a>
+                </p>
+                <small style="color: #ff6600; font-weight: 600;">★ {{ book.average_rating }} ({{ book.review_count }} reviews)</small>
+            </div>
+            {% empty %}
+            <div class="col8"><div class="image"><img src="{% static 'images/book1.jpg' %}" alt=""></div><p>Designing Data-Intensive Applications</p></div>
+            <div class="col8"><div class="image"><img src="{% static 'images/book2.jpg' %}" alt=""></div><p>Deep Learning: Foundations</p></div>
+            <div class="col8"><div class="image"><img src="{% static 'images/book3.jpg' %}" alt=""></div><p>The Intelligent Investor</p></div>
+            <div class="col8"><div class="image"><img src="{% static 'images/book4.jpg' %}" alt=""></div><p>Clean Architecture</p></div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="gallery">
+        <div class="maingallery">
+            <img src="{% static 'images/img1.jpg' %}" alt="Library gallery 1">
+            <img src="{% static 'images/img2.jpg' %}" alt="Library gallery 2">
+            <img src="{% static 'images/img3.jpg' %}" alt="Library gallery 3">
+            <img src="{% static 'images/img4.jpg' %}" alt="Library gallery 4">
+            <img src="{% static 'images/img5.jpg' %}" alt="Library gallery 5">
+            <img src="{% static 'images/img6.jpg' %}" alt="Library gallery 6">
+        </div>
+    </section>
+
+    <section class="review" id="review">
+        <div class="maintopics">
+            <h3>Frequently Asked Questions</h3>
+            <p>Quick answers on accessing our catalog, saving bookmarks, and submitting reviews.</p>
+        </div>
+        <div class="mainreviews" id="flag">
+            <div class="col10">
+                <div class="button" onclick="this.nextElementSibling.classList.toggle('active')">
+                    <span class="according">How do I access free eBooks on BookSphere?</span>
+                    <i class='bx bx-plus'></i>
+                </div>
+                <div class="pannel" style="display: block; padding: 10px 0;">
+                    <p>Simply navigate to our <a href="/ebook/" style="color: #ff6600;">E-Books page</a>. You can search across titles, authors, and categories, read sample excerpts online, or download copies directly.</p>
+                </div>
+            </div>
+            <div class="col10">
+                <div class="button" onclick="this.nextElementSibling.classList.toggle('active')">
+                    <span class="according">Can I save books to my personal reading list?</span>
+                    <i class='bx bx-plus'></i>
+                </div>
+                <div class="pannel" style="display: block; padding: 10px 0;">
+                    <p>Yes! Register or sign in to your free account, then click the heart/bookmark icon on any book to add it directly to your Library.</p>
+                </div>
+            </div>
+            <div class="col10">
+                <div class="button" onclick="this.nextElementSibling.classList.toggle('active')">
+                    <span class="according">How does the community review and rating system work?</span>
+                    <i class='bx bx-plus'></i>
+                </div>
+                <div class="pannel" style="display: block; padding: 10px 0;">
+                    <p>Verified readers can post 1-to-5 star ratings and detailed critical assessments directly on each book's detail page.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="touch">
+        <div class="container">
+            <h2>Get In Touch With Us</h2>
+            <p>Have recommendations for new books, author talks, or technical queries? Send us a message directly:</p>
+            <form action="" method="POST" id="data">
+                {% csrf_token %}
+                <input type="text" placeholder="ENTER YOUR FIRST NAME" name="first_name" required>
+                <input type="text" placeholder="ENTER YOUR LAST NAME" name="last_name" required>
+                <input type="email" placeholder="ENTER YOUR EMAIL" name="email" id="email" required>
+                <textarea placeholder="ENTER YOUR MESSAGE" id="msg" name="msg" cols="30" rows="6" required></textarea>
+                <button type="submit">Submit Feedback</button>
+            </form>
+        </div>
+    </section>
+
+    <section class="footer">
+        <div class="container">
+            <img src="{% static 'images/logo.png' %}" alt="BookSphere" style="height: 40px; width: auto;">
+            <div class="col11">
+                <span>Follow Our Updates</span>
+                <div class="input">
+                    <input type="email" placeholder="ENTER YOUR EMAIL" name="newsletter_email">
+                    <button type="button">SUBSCRIBE</button>
+                </div>
+            </div>
+        </div>
+        <div class="col12">
+            <span>&copy; 2024–2026 BookSphere. All Rights Reserved. Created by Jhalak Saini.</span>
+            <div class="social">
+                <i class='bx bxl-facebook-square'></i>
+                <i class='bx bxl-twitter'></i>
+                <i class='bx bxl-instagram'></i>
+                <i class='bx bxl-youtube'></i>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        let navBar = document.querySelector('.navbar');
+        let menuBar = document.querySelector('#menuBar');
+        let closeBtn = document.querySelector('#close');
+        
+        if (menuBar && navBar) {
+            menuBar.onclick = () => {
+                menuBar.classList.toggle('bx-x');
+                navBar.classList.toggle('active');
+            }
+        }
+        if (closeBtn && navBar && menuBar) {
+            closeBtn.onclick = () => {
+                menuBar.classList.remove('bx-x');
+                navBar.classList.remove('active');
+            }
+        }
+    </script>
+</body>
+</html>

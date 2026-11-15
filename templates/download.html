@@ -1,0 +1,132 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download E-Books – BookSphere</title>
+    <link rel="shortcut icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRLV1Jth7w0RYERXRuyFHeCFclAeGnjsetwxQ&s" type="image/x-icon">
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+        }
+        body {
+            background-color: #0b111e;
+            color: white;
+            min-height: 100vh;
+        }
+        .nav-header {
+            padding: 20px 40px;
+            background: #0f172a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #1e293b;
+        }
+        .nav-header a {
+            color: #fff;
+            text-decoration: none;
+            margin-right: 15px;
+            font-weight: 500;
+        }
+        .nav-header a:hover {
+            color: #ff6600;
+        }
+        .page-title {
+            text-align: center;
+            padding: 40px 20px 20px;
+        }
+        .page-title h1 {
+            font-size: 2.6rem;
+            color: #ff6600;
+            margin-bottom: 10px;
+        }
+        .books-container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 2.5rem;
+        }
+        .book-item {
+            background: #1e293b;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #334155;
+            transition: transform 0.3s, border-color 0.3s;
+            display: flex;
+            flex-direction: column;
+            text-align: center;
+            padding-bottom: 15px;
+        }
+        .book-item:hover {
+            transform: translateY(-6px);
+            border-color: #ff6600;
+        }
+        .book-item img {
+            width: 100%;
+            height: 320px;
+            object-fit: cover;
+            transition: 0.3s;
+        }
+        .book-item .text {
+            padding: 12px 10px;
+        }
+        .book-item a {
+            color: #f8fafc;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        .book-item a:hover {
+            color: #ff6600;
+        }
+        .btn-download {
+            margin-top: 10px;
+            display: inline-block;
+            background: #ff6600;
+            color: white !important;
+            padding: 8px 18px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-header">
+        <a href="/" style="font-weight: 700; color: #ff6600; font-size: 1.2rem;">BookSphere 📚</a>
+        <div>
+            <a href="/">Home</a>
+            <a href="/ebook/">E-Books</a>
+            <a href="/reviews/">Reviews</a>
+            <a href="/events/">Events</a>
+            <a href="/faqs/">FAQs</a>
+        </div>
+    </div>
+
+    <div class="page-title">
+        <h1>Download Digital E-Books</h1>
+        <p>Instant digital access to curated classics and engineering texts in PDF, EPUB, and Web Readers.</p>
+    </div>
+
+    <div class="books-container">
+        {% for book in books %}
+        <div class="book-item">
+            <img src="{{ book.cover_image_url|default:'/static/images/book1.jpg' }}" alt="{{ book.title }}">
+            <div class="text">
+                <a href="{% url 'book_detail' pk=book.id %}">{{ book.title }}</a>
+                <p style="font-size: 0.8rem; color: #94a3b8; margin-top: 4px;">by {{ book.author }}</p>
+                <a href="{% url 'book_detail' pk=book.id %}" class="btn-download">Download / Read</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

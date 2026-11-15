@@ -13,12 +13,28 @@ from .forms import BookForm, ReviewForm, UserRegistrationForm
 
 # ----------------- WEB VIEWS -----------------
 
-def book_list(request):
-    """Catalog of eBooks with search, category filtering, and sorting."""
+def home_view(request):
+    """Landing Page (Home UI from BookSphere)."""
+    if request.method == 'POST':
+        messages.success(request, "Thank you for getting in touch! Our team will respond shortly.")
+        return redirect('home')
+
+    books = Book.objects.all()[:8]
+    categories = Category.objects.all()
+    total_books = Book.objects.count()
+
+    context = {
+        'books': books,
+        'categories': categories,
+        'total_books': total_books,
+    }
+    return render(request, 'home.html', context)
+
+def ebook_view(request):
+    """E-Books Catalog & Search UI."""
     books = Book.objects.all()
     categories = Category.objects.all()
 
-    # Search filter
     q = request.GET.get('q', '').strip()
     if q:
         books = books.filter(
@@ -27,23 +43,12 @@ def book_list(request):
             Q(description__icontains=q)
         )
 
-    # Category filter
     category_slug = request.GET.get('category', '').strip()
     active_category = None
     if category_slug:
         active_category = get_object_or_404(Category, slug=category_slug)
         books = books.filter(category=active_category)
 
-    # Sorting
-    sort = request.GET.get('sort', 'newest')
-    if sort == 'title':
-        books = books.order_by('title')
-    elif sort == 'year':
-        books = books.order_by('-publication_year')
-    else:
-        books = books.order_by('-created_at')
-
-    # Get user bookmarks if logged in
     user_saved_ids = []
     if request.user.is_authenticated:
         user_saved_ids = list(request.user.saved_books.values_list('book_id', flat=True))
@@ -53,11 +58,32 @@ def book_list(request):
         'categories': categories,
         'active_category': active_category,
         'q': q,
-        'sort': sort,
         'user_saved_ids': user_saved_ids,
         'total_count': books.count(),
     }
-    return render(request, 'books/book_list.html', context)
+    return render(request, 'ebook.html', context)
+
+def about_view(request):
+    """About Us Page."""
+    return render(request, 'about.html')
+
+def download_view(request):
+    """Download Page."""
+    books = Book.objects.all()
+    return render(request, 'download.html', {'books': books})
+
+def reviews_view(request):
+    """Community Reviews Page."""
+    reviews = Review.objects.select_related('book', 'user').all()
+    return render(request, 'reviews.html', {'reviews': reviews})
+
+def events_view(request):
+    """Community Events Page."""
+    return render(request, 'events.html')
+
+def faqs_view(request):
+    """FAQs Page."""
+    return render(request, 'faqs.html')
 
 def book_detail(request, pk):
     """Detailed view of an eBook with review submission and chapter preview."""
@@ -108,7 +134,7 @@ def book_delete(request, pk):
         title = book.title
         book.delete()
         messages.success(request, f"'{title}' has been removed from BookSphere.")
-        return redirect('book_list')
+        return redirect('home')
     return render(request, 'books/book_confirm_delete.html', {'book': book})
 
 @login_required
@@ -121,7 +147,7 @@ def reading_list(request):
 
 def register_view(request):
     if request.user.is_authenticated:
-        return redirect('book_list')
+        return redirect('home')
     if request.method == 'POST':
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
@@ -130,21 +156,21 @@ def register_view(request):
             user.save()
             login(request, user)
             messages.success(request, f"Welcome to BookSphere, {user.username}!")
-            return redirect('book_list')
+            return redirect('home')
     else:
         form = UserRegistrationForm()
     return render(request, 'auth/register.html', {'form': form})
 
 def login_view(request):
     if request.user.is_authenticated:
-        return redirect('book_list')
+        return redirect('home')
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
             login(request, user)
             messages.success(request, f"Welcome back, {user.username}!")
-            return redirect('book_list')
+            return redirect('home')
     else:
         form = AuthenticationForm()
     return render(request, 'auth/login.html', {'form': form})
@@ -152,7 +178,7 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     messages.info(request, "You have been logged out.")
-    return redirect('book_list')
+    return redirect('home')
 
 # ----------------- RESTFUL API ENDPOINTS -----------------
 
