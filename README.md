@@ -1,5 +1,6 @@
 # 📚 BookSphere – Full-Stack eBook Web Application
 
+[![Vercel](https://img.shields.io/badge/Deployed-Vercel%20Serverless-000000.svg?logo=vercel)](https://booksphere-five.vercel.app)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
 [![Django](https://img.shields.io/badge/Django-5.0%2B-092E20.svg)](https://www.djangoproject.com/)
 [![SQLite](https://img.shields.io/badge/Database-SQLite3-003B57.svg)](https://www.sqlite.org/)
